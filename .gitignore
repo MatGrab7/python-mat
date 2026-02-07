@@ -64,7 +64,6 @@ htmlcov/
 logs/
 
 # Dependencies
-requirements.txt
 setup.py
 
 # OS
