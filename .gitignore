@@ -1,0 +1,80 @@
+# .gitignore - Python Development and CI/CD
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+.env
+.env.local
+
+# IDE and Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.sublime-project
+.sublime-workspace
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+
+# Secrets and CI
+.secrets.baseline
+.detect-secrets
+*.pem
+*.key
+*.cert
+logs/
+
+# Dependencies
+requirements.txt
+setup.py
+
+# OS
+Thumbs.db
+.Directory
+
+# Project Specific
+*.csv
+*.xlsx
+*.db
+*.sqlite3
+temp/
+tmp/

@@ -1,0 +1,23 @@
+# Development dependencies for code quality and security scanning
+# Install with: pip install -r requirements-dev.txt
+
+# Code Quality Tools
+pylint>=3.0.0
+flake8>=6.0.0
+black>=23.0.0
+isort>=5.12.0
+mypy>=1.0.0
+
+# Secrets Detection
+detect-secrets>=1.4.0
+truffleHog>=3.0.0
+
+# Optional: Bandit for security issues
+bandit>=1.7.0
+
+# Optional: Safety for dependency vulnerabilities
+safety>=2.3.0
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
