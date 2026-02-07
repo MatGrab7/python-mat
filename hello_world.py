@@ -9,7 +9,9 @@ and secrets scanning pipeline is working correctly.
 
 def main() -> None:
     """Print hello world message."""
+    # Display greeting message to console
     print("Hello, World!")
+    # This script is used for testing the CI/CD pipeline
 
 
 if __name__ == "__main__":
