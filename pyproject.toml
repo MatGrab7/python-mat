@@ -38,6 +38,7 @@ ignore_missing_imports = true
 testpaths = ["tests"]
 python_files = "test_*.py"
 addopts = "--cov=. --cov-report=html --cov-report=term-missing"
+minversion = "7.0"
 
 [build-system]
 requires = ["setuptools>=65.0", "wheel"]
