@@ -29,10 +29,29 @@ Notes:
 """
 
 
+def greet(name: str = "World") -> str:
+    """
+    Generate a greeting message.
+
+    Args:
+        name: The name of the person to greet
+
+    Returns:
+        The formatted greeting message
+    """
+    return f"Hello, {name}!"
+
+
 def main() -> None:
     """Print hello world message."""
     # Display greeting message to console
-    print("Hello, World!")
+    greeting_message = greet()
+    print(greeting_message)
+
+    # Test with custom name
+    custom_greeting = greet("Developer")
+    print(custom_greeting)
+
     # This script is used for testing the CI/CD pipeline
 
 
