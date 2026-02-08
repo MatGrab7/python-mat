@@ -47,10 +47,12 @@ jobs:
 
       - name: Verify Code Quality workflow succeeded for this commit
         id: verify_ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Checking that 'Code Quality and Secrets Scan' passed for commit $GITHUB_SHA"
-          runs=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=200")
-          concl=$(echo "$runs" | jq -r --arg sha "$GITHUB_SHA" '.workflow_runs[] | select(.head_sha==$sha and .name=="Code Quality and Secrets Scan") | .conclusion' | head -n1)
+          runs=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=200")
+          concl=$(echo "$runs" | jq -r --arg sha "$GITHUB_SHA" '.workflow_runs // [] | .[] | select(.head_sha==$sha and .name=="Code Quality and Secrets Scan") | .conclusion' | head -n1)
           if [ -z "$concl" ] || [ "$concl" != "success" ]; then
             echo "Required workflow did not succeed for SHA $GITHUB_SHA (conclusion: ${concl:-none})"
             exit 1
