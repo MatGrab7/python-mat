@@ -23,27 +23,33 @@ jobs:
       - name: Generate version from commit
         id: version
         run: |
+          echo "::group::Generate version"
           VERSION="v$(date +%Y.%m.%d)-$(git rev-parse --short HEAD)"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Generated version: $VERSION"
+          echo "::endgroup::"
 
       - name: Check if version already exists
         id: check_tag
         run: |
+          echo "::group::Check existing tag"
           if git rev-parse "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
+          echo "::endgroup::"
 
       - name: Generate changelog
         if: steps.check_tag.outputs.exists == 'false'
         id: changelog
         run: |
+          echo "::group::Generate changelog"
           CHANGELOG=$(git log --oneline -10)
           CHANGELOG="${CHANGELOG//'%'/'%25'}"
           CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
           echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "::endgroup::"
 
       - name: Verify Code Quality workflow succeeded for this commit
         id: verify_ci
