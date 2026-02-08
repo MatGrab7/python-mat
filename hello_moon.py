@@ -15,6 +15,7 @@ def greet_moon(moon_name: Optional[str] = None) -> str:
     Returns:
         A greeting string
     """
+        # CI trigger test: minor whitespace/comment change to exercise workflows
     if moon_name:
         return f"Hello, {moon_name} moon!"
     return "Hello, Moon!"
