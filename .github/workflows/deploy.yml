@@ -1,16 +1,15 @@
 name: Deploy - Create Release
 
 on:
-  workflow_run:
-    workflows: ["Code Quality and Secrets Scan"]
-    types: [completed]
+  push:
+    branches: [ main, dev ]
 
 jobs:
   deploy:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    # Only run when the Code Quality workflow completed successfully for PRs
-    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.pull_requests[0].base.ref == 'main' || github.event.workflow_run.pull_requests[0].base.ref == 'dev') }}
+    # Only run on push to main or dev (i.e. merges)
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') }}
     permissions:
       contents: write
       packages: write
