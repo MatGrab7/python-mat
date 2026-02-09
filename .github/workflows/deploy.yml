@@ -2,18 +2,14 @@ name: Deploy - Create Release
 
 on:
   push:
-    branches: [ main ]
-  workflow_run:
-    workflows: ["Code Quality and Secrets Scan"]
-    types: [completed]
-    branches: [main]
+    branches: [ main, dev ]
 
 jobs:
   deploy:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    # Only run if the CI workflow was successful
-    if: ${{ (github.event_name == 'push') || (github.event.workflow_run.conclusion == 'success') }}
+    # Only run on push to main or dev (i.e. merges)
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') }}
     permissions:
       contents: write
       packages: write
@@ -27,27 +23,59 @@ jobs:
       - name: Generate version from commit
         id: version
         run: |
+          echo "::group::Generate version"
           VERSION="v$(date +%Y.%m.%d)-$(git rev-parse --short HEAD)"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Generated version: $VERSION"
+          echo "::endgroup::"
 
       - name: Check if version already exists
         id: check_tag
         run: |
+          echo "::group::Check existing tag"
           if git rev-parse "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
+          echo "::endgroup::"
 
       - name: Generate changelog
         if: steps.check_tag.outputs.exists == 'false'
         id: changelog
         run: |
+          echo "::group::Generate changelog"
           CHANGELOG=$(git log --oneline -10)
           CHANGELOG="${CHANGELOG//'%'/'%25'}"
           CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
           echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "::endgroup::"
+
+      - name: Verify Code Quality workflow succeeded for this commit
+        id: verify_ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking that 'Code Quality and Secrets Scan' passed for commit $GITHUB_SHA"
+          # Query the specific workflow file runs filtered by head_sha to avoid null issues
+          workflow_path="code-quality-and-secrets-scan.yml"
+          attempts=6
+          wait_sec=10
+          concl=""
+          for i in $(seq 1 $attempts); do
+            runs=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow_path}/runs?head_sha=${GITHUB_SHA}")
+            concl=$(echo "$runs" | jq -r '.workflow_runs[0].conclusion // empty') || concl=""
+            if [ -n "$concl" ]; then
+              break
+            fi
+            echo "Attempt $i: no conclusion yet, waiting ${wait_sec}s..."
+            sleep $wait_sec
+          done
+          if [ -z "$concl" ] || [ "$concl" != "success" ]; then
+            echo "Required workflow did not succeed for SHA $GITHUB_SHA (conclusion: ${concl:-none})"
+            exit 1
+          fi
+          echo "Code Quality workflow passed: $concl"
 
       - name: Create Release
         if: steps.check_tag.outputs.exists == 'false'
