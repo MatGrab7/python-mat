@@ -13,7 +13,7 @@ detect-secrets>=1.4.0
 truffleHog>=3.0.0
 
 # Optional: Bandit for security issues
-bandit>=1.7.0
+bandit>=1.9.4
 
 # Optional: Safety for dependency vulnerabilities
 safety>=2.3.0
